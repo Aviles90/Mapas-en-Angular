@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 
 @Component({
@@ -22,19 +22,26 @@ import * as mapboxgl from 'mapbox-gl';
     }
   `]
 })
-export class ZoomRageComponent implements AfterViewInit {
+export class ZoomRageComponent implements AfterViewInit, OnDestroy {
 
   @ViewChild('mapa') divMapa!: ElementRef //sirve para tomar un elemento y utilizarlo como una propiedad
   mapa!: mapboxgl.Map;
-  zoomLevel: number = 10;
+  zoomLevel: number = 15;
+  center: [number, number] = [-99.04217275766999, 19.47755822576886]
 
   constructor() { }
+
+  ngOnDestroy(): void {
+    this.mapa.off('zoom', () => {});
+    this.mapa.off('zoomend', () => {});
+    this.mapa.off('move', () => {});
+  }
 
   ngAfterViewInit(): void {
     this.mapa = new mapboxgl.Map({
       container: this.divMapa.nativeElement,
       style: 'mapbox://styles/mapbox/dark-v10',
-      center: [ -99.04217275766999, 19.47755822576886],
+      center: this.center,
       zoom: this.zoomLevel
     });
     
@@ -47,6 +54,13 @@ export class ZoomRageComponent implements AfterViewInit {
       if (this.mapa.getZoom() > 18 ) {        
         this.mapa.zoomTo( 18 );
       }
+    })
+
+    this.mapa.on('move', (ev) => {     
+        // this.mapa.getCenter
+        const target = ev.target;
+        const {lng, lat} = target.getCenter();
+        this.center = [lng, lat]
     })
 
   }
