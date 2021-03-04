@@ -18,6 +18,7 @@ import * as mapboxgl from 'mapbox-gl';
       position: fixed;
       z-index: 999;
       box-shadow:3px 3px 3px black;
+      width:400px;
     }
   `]
 })
@@ -41,6 +42,12 @@ export class ZoomRageComponent implements AfterViewInit {
       // console.log(ev);
       this.zoomLevel = this.mapa.getZoom();
     })
+   
+    this.mapa.on('zoomend', (ev) => {
+      if (this.mapa.getZoom() > 18 ) {        
+        this.mapa.zoomTo( 18 );
+      }
+    })
 
   }
 
@@ -52,6 +59,10 @@ export class ZoomRageComponent implements AfterViewInit {
 
   zoomIn(){
     this.mapa.zoomIn();  
+  }
+
+  zoomCambio(valor: string){
+    this.mapa.zoomTo( Number(valor) );
   }
 
 }
