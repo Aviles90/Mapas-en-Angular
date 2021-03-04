@@ -25,6 +25,7 @@ export class ZoomRageComponent implements AfterViewInit {
 
   @ViewChild('mapa') divMapa!: ElementRef //sirve para tomar un elemento y utilizarlo como una propiedad
   mapa!: mapboxgl.Map;
+  zoomLevel: number = 10;
 
   constructor() { }
 
@@ -33,17 +34,24 @@ export class ZoomRageComponent implements AfterViewInit {
       container: this.divMapa.nativeElement,
       style: 'mapbox://styles/mapbox/dark-v10',
       center: [ -99.04217275766999, 19.47755822576886],
-      zoom: 16
+      zoom: this.zoomLevel
     });
     
+    this.mapa.on('zoom', (ev) => {//manera de hacer un Listener (Escuchar un evento)
+      // console.log(ev);
+      this.zoomLevel = this.mapa.getZoom();
+    })
+
   }
 
   zoomOut(){
     this.mapa.zoomOut();    
+    // this.zoomLevel = this.mapa.getZoom();  
+
   }
 
   zoomIn(){
-    this.mapa.zoomIn();    
+    this.mapa.zoomIn();  
   }
 
 }
