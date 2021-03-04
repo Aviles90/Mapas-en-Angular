@@ -32,6 +32,7 @@ export class ZoomRageComponent implements AfterViewInit, OnDestroy {
   constructor() { }
 
   ngOnDestroy(): void {
+    //REGLA DE ORO, SIEMPRE SE DEBEN DE DESTRUIR LOS LISTENER CUANDO SE SALE DEL COMPINENTE
     this.mapa.off('zoom', () => {});
     this.mapa.off('zoomend', () => {});
     this.mapa.off('move', () => {});
