@@ -3,7 +3,8 @@ import * as mapboxgl from 'mapbox-gl';
 
 interface MarcadorColor {
   color: string;
-  marker: mapboxgl.Marker;
+  marker?: mapboxgl.Marker;
+  centro?: [number, number];
 }
 
 @Component({
@@ -47,7 +48,8 @@ export class MarcadoresComponent implements AfterViewInit {
       zoom: this.zoomLevel
     });
 
-    
+    this.leerLocalStorage();
+
     //crear markador personalizado
       // const markerHtml : HTMLElement = document.createElement('div');
       // markerHtml.innerHTML = 'Mi casa'
@@ -80,11 +82,52 @@ export class MarcadoresComponent implements AfterViewInit {
       color:color,
       marker: nuevoMarcador
     } );
+    this.guardarMarcadoresLocalStorage();
   }
 
   irMarcador(marker: mapboxgl.Marker){
     this.mapa.flyTo({
       center: marker.getLngLat()
+    })
+  }
+
+  guardarMarcadoresLocalStorage(){
+
+    const lngLatArr : MarcadorColor[] = [];
+
+    this.marcadores.forEach( m => {
+      const color = m.color;
+      // const lngLat = m.marker.getLngLat();
+      const {lng, lat} = m.marker!.getLngLat();
+
+      lngLatArr.push({
+        color: color,
+        centro: [lng, lat]
+      });
+    })
+
+    localStorage.setItem('marcadores', JSON.stringify(lngLatArr));
+
+  }
+
+  leerLocalStorage(){
+    if( !localStorage.getItem('marcadores')){
+      return;
+    }
+    const lngLatArr: MarcadorColor[] = JSON.parse( localStorage.getItem('marcadores')! );
+
+    lngLatArr.forEach(m => {
+      const newMarker = new mapboxgl.Marker({
+        color: m.color,
+        draggable: true
+      })
+      .setLngLat(m.centro!)
+      .addTo(this.mapa)
+
+      this.marcadores.push({
+        marker: newMarker,
+        color: m.color
+      })
     })
   }
 
